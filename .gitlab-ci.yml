@@ -1,0 +1,42 @@
+stages:
+  - build
+  - test
+  - package
+
+build-job:
+  stage: build
+  script:
+    # Устанавливаем компилятор
+    - apt-get update && apt-get install -y build-essential
+    # Собираем
+    - make
+  artifacts:
+    name: "build-artifacts"
+    paths:
+      - longest-word
+    expire_in: 1 day
+
+test-job:
+  stage: test
+  needs: ["build-job"]
+  script:
+    - chmod +x cicd/test.sh
+    - ./cicd/test.sh
+  artifacts:
+    name: "test-artifacts"
+    paths:
+      - longest-word
+    expire_in: 1 day
+
+package-job:
+  stage: package
+  needs: ["test-job"]
+  script:
+    - apt-get update && apt-get install -y dpkg-dev
+    - chmod +x cicd/package.sh
+    - ./cicd/package.sh
+  artifacts:
+    name: "deb-artifacts"
+    paths:
+      - longest-word_1.0_amd64.deb
+    expire_in: 1 week
