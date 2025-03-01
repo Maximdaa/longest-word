@@ -6,10 +6,7 @@ stages:
 build-job:
   stage: build
   script:
-    # Устанавливаем компилятор
-    - apt-get update && apt-get install -y build-essential
-    # Собираем
-    - make
+    - ./cicd/build.sh
   artifacts:
     name: "build-artifacts"
     paths:
@@ -32,7 +29,6 @@ package-job:
   stage: package
   needs: ["test-job"]
   script:
-    - apt-get update && apt-get install -y dpkg-dev
     - chmod +x cicd/package.sh
     - ./cicd/package.sh
   artifacts:
